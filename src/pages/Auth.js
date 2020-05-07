@@ -5,6 +5,8 @@ import Title from "../components/Title";
 import * as firebase from "firebase/app";
 
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import styled from "styled-components";
+import { isMobile } from "react-device-detect";
 const authConfig = {
   signInFlow: "popup",
   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
@@ -15,10 +17,12 @@ export default ({}) => {
   return (
     <>
       <AuthHeader />
-      <StyledFirebaseAuth
-        uiConfig={authConfig}
-        firebaseAuth={firebase.auth()}
-      />
+      <AuthContainer>
+        <StyledFirebaseAuth
+          uiConfig={authConfig}
+          firebaseAuth={firebase.auth()}
+        />
+      </AuthContainer>
     </>
   );
 };
@@ -26,7 +30,12 @@ export default ({}) => {
 const AuthHeader = ({}) => {
   return (
     <Header>
-      <Title text="shelf." />
+      <Title text="shelf. ridiculously simple notes." />
     </Header>
   );
 };
+
+const AuthContainer = styled.div`
+  margin-top: 48px;
+  zoom: ${isMobile? 2: 1};
+`;

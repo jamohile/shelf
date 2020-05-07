@@ -4,63 +4,53 @@ import styled from "styled-components";
 import Header from "../components/Header";
 import Title from "../components/Title";
 import Shelf from "../components/Shelf";
+import LoadingHeader from "../components/LoadingHeader";
 
 import * as firebase from "firebase/app";
 import BookModel from "../models/Book";
 import { Link } from "react-router-dom";
+import HeaderButton from "../components/HeaderButton";
 
 const S = {};
 
 export default ({}) => {
-  const [books, setBooks] = useState();
-  const booksRef = getBooksRef();
+  const [books, setBooks] = useState(undefined);
 
   useEffect(() => {
-    return loadBooksEffect(booksRef, setBooks);
+    return BookModel.getAll(setBooks);
   }, []);
 
+  if (books === undefined) {
+    return <LoadingHeader />;
+  }
+
   return (
-    <>
-      <MainHeader onAdd={() => booksRef.add({ color: "red" })} books={books} />
-      {books && <Shelf books={books} />}
-    </>
+    <S.Home>
+      <MainHeader books={books} />
+      <Shelf books={books} />
+    </S.Home>
   );
 };
 
-function getBooksRef() {
-  const uid = firebase.auth().currentUser.uid;
-  return firebase.firestore().collection("user").doc(uid).collection("books");
-}
-function loadBooksEffect(booksRef, setBooks) {
-  const cancelEffect = booksRef.onSnapshot((snapshot) => {
-    const updatedBooks = [];
-    snapshot.forEach((book) => updatedBooks.push(BookModel.fromSnapshot(book)));
-    setBooks(updatedBooks);
-  });
-  return cancelEffect;
-}
+S.Home = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 
-S.MainHeader = styled(Header)`
-  margin-bottom: 24px;
-`;
-S.Spacer = styled.span`
-  width: 24px;
-`;
-S.AddBookButton = styled.span`
-  transition: all 0.2s;
-  :hover {
-    transform: scale(1.1);
-    cursor: pointer;
-  }
-`;
 const MainHeader = ({ books, onAdd }) => {
   return (
-    <S.MainHeader>
-      <S.Spacer style={{ width: 24 }} />
-      <Title text={books ? "shelf." : "Loading"} />
+    <Header>
+      <HeaderButton
+        className="material-icons"
+        onClick={() => firebase.auth().signOut()}
+      >
+        exit_to_app
+      </HeaderButton>
+      <Title text="shelf." />
       <Link to="/add-book">
-        <S.AddBookButton className="material-icons">add</S.AddBookButton>
+        <HeaderButton className="material-icons">add</HeaderButton>
       </Link>
-    </S.MainHeader>
+    </Header>
   );
 };

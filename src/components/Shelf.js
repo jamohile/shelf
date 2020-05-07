@@ -2,45 +2,69 @@ import React from "react";
 import styled from "styled-components";
 import Book from "./Book";
 import { withRouter } from "react-router-dom";
+import { isMobile } from "react-device-detect";
 
 const S = {};
 
+S.Shelfs = styled.div`
+  margin-top: ${isMobile ? 96 : 48}px;
+`;
+
 S.Shelf = styled.div`
-  margin-top: 16px;
+  margin-bottom: ${isMobile ? 96 : 48}px;
 `;
 
 S.Books = styled.div`
-  margin-bottom: 8px;
+  margin-bottom: ${isMobile ? 16 : 8}px;
   display: flex;
   flex-direction: row;
+  justify-content: ${isMobile ? "center" : "flex-start"};
 `;
 
 S.ShelfBase = styled.div`
-  height: 12px;
+  height: ${isMobile ? 23 : 12}px;
   width: 100%;
   background: #cdab92;
-  border-radius: 6px;
+  border-radius: ${isMobile ? 12 : 6}px;
 `;
 
 export default ({ books }) => {
+  const shelfs = [];
+  for (let i = 0; i < books.length; i += 6) {
+    shelfs.push(books.slice(i, i + 6));
+  }
   return (
-    <S.Shelf>
-      <Books books={books} />
-      <S.ShelfBase />
-    </S.Shelf>
+    <S.Shelfs>
+      {shelfs.map((shelf) => (
+        <S.Shelf>
+          <Books books={shelf} />
+          <S.ShelfBase />
+        </S.Shelf>
+      ))}
+    </S.Shelfs>
   );
 };
 
 S.BookContainer = styled.div`
-  margin-right: 24px;
+  margin-right: ${isMobile ? 48 : 24}px;
+  width: ${isMobile ? 140 : 70}px;
+
+  transition: all 0.2s;
+
   :last-child {
     margin-right: 0;
+  }
+  :hover {
+    transform: translateY(-${isMobile ? 16 : 8}px);
   }
 `;
 
 S.BookTitle = styled.div`
-  margin-top: 12px;
-  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: ${isMobile ? 24 : 12}px;
+  font-size: ${isMobile ? 24 : 12}px;
   text-align: center;
   font-family: bitter;
 `;

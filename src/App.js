@@ -6,7 +6,9 @@ import * as firebase from "firebase";
 
 import pages from "./pages";
 
-const Main = styled.div``;
+const Main = styled.div`
+  height: 100%;
+`;
 
 export default () => {
   const [user, setUser] = useState(firebase.auth().currentUser);

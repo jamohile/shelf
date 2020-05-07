@@ -4,11 +4,15 @@ import styled from "styled-components";
 
 import Header from "../components/Header";
 import Title from "../components/Title";
-import colors, { getColorName, getColorHex } from "../colors";
 
 import * as firebase from "firebase/app";
 import Book from "../components/Book";
+import BookModel from "../models/Book";
 import EditableTitle from "../components/EditableTitle";
+import DoneCheckmark from "../components/DoneCheckmark";
+import ColorSelector from "../components/ColorSelector";
+import HeaderButton from "../components/HeaderButton";
+import HeaderSpacer from "../components/HeaderSpacer";
 
 const S = {};
 
@@ -23,8 +27,6 @@ export default ({ bookId }) => {
   const [book, setBook] = useState({ color: "red", name: "" });
   const [submitted, setSubmitted] = useState(false);
 
-  const booksRef = getBooksRef();
-
   if (submitted) {
     return <Redirect to="/home" />;
   }
@@ -35,7 +37,7 @@ export default ({ bookId }) => {
         book={book}
         onChange={(name) => setBook({ ...book, name })}
         onSubmit={async () => {
-          await booksRef.add(book);
+          await BookModel.getCollectionRef().add(book);
           setSubmitted(true);
         }}
       />
@@ -76,7 +78,7 @@ const AddBookHeader = ({ book, onChange, onSubmit }) => {
   return (
     <S.AddBookHeader>
       <Link to="/home">
-        <S.Button className="material-icons">arrow_back</S.Button>
+        <HeaderButton className="material-icons">arrow_back</HeaderButton>
       </Link>
       <EditableTitle
         placeholder={"Title"}
@@ -84,46 +86,10 @@ const AddBookHeader = ({ book, onChange, onSubmit }) => {
         onChange={onChange}
       />
       {book.name && book.color ? (
-        <S.Button className="material-icons" onClick={onSubmit}>
-          done
-        </S.Button>
+        <DoneCheckmark onClick={onSubmit} />
       ) : (
-        <S.Spacer />
+        <HeaderSpacer />
       )}
     </S.AddBookHeader>
-  );
-};
-
-S.Color = styled.div`
-  width: 24px;
-  height: 24px;
-  border-radius: 12px;
-  background: ${(props) => getColorHex(props.color)};
-  box-sizing: border-box;
-  border: ${(props) => (props.selected ? "3px solid black" : "none")};
-`;
-const Color = ({ color, selected, onSelect }) => {
-  return <S.Color color={color} selected={selected} onClick={onSelect} />;
-};
-
-S.ColorSelector = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: 48px;
-`;
-const ColorSelector = ({ value, onChange }) => {
-  const options = Object.keys(colors);
-  return (
-    <S.ColorSelector>
-      {options.map((option) => (
-        <Color
-          color={option}
-          selected={value === option}
-          onSelect={() => onChange(option)}
-        />
-      ))}
-    </S.ColorSelector>
   );
 };

@@ -1,106 +1,59 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import styled from "styled-components";
 
 import Header from "../components/Header";
 import Title from "../components/Title";
-import { getColorHex } from "../colors";
 
-import * as firebase from "firebase/app";
 import BookModel from "../models/Book";
+import BookColorLine from "../components/BookColorLine";
+import BookText from "../components/BookText";
+import LoadingHeader from "../components/LoadingHeader";
+import HeaderSpacer from "../components/HeaderSpacer";
+import HeaderButton from "../components/HeaderButton";
 
 const S = {};
 
 export default ({ bookId }) => {
-  const [book, setBook] = useState(undefined);
-  const bookRef = getBookRef(bookId);
+  const [book, setBook] = useState({ instance: new BookModel(bookId) });
 
   useEffect(() => {
-    return loadBookEffect(bookRef, setBook);
+    return book.instance.get(setBook);
   }, []);
 
+  if (book.instance.name === undefined) {
+    return <LoadingHeader />;
+  }
   return (
     <>
-      <BookHeader book={book} />
-      {book && <BookColorLine book={book} />}
-      {book && (
-        <BookText book={book} onChange={(text) => bookRef.update({ text })} />
-      )}
+      <BookHeader book={book.instance} />
+      <BookColorLine book={book.instance} />
+      <BookText
+        book={book.instance}
+        onChange={(text) => book.instance.update({ text })}
+      />
     </>
   );
 };
 
-function getBookRef(bookId) {
-  const uid = firebase.auth().currentUser.uid;
-  return firebase
-    .firestore()
-    .collection("user")
-    .doc(uid)
-    .collection("books")
-    .doc(bookId);
-}
-function loadBookEffect(bookRef, setBook) {
-  const cancelEffect = bookRef.onSnapshot((snapshot) => {
-    setBook(BookModel.fromSnapshot(snapshot));
-  });
-  return cancelEffect;
-}
-
-S.BookHeader = styled(Header)`
-  margin-bottom: 48px;
-`;
-
-S.Spacer = styled.span`
-  width: 24px;
-`;
-S.BackButton = styled.span`
-  transition: all 0.2s;
-  color: black !important;
-  :hover {
-    transform: scale(1.1);
-    cursor: pointer;
-  }
-`;
-
-const BookHeader = ({ book }) => {
+const BookHeader = withRouter(({ book, history }) => {
   return (
-    <S.BookHeader>
+    <Header>
       <Link to="/home">
-        <S.BackButton className="material-icons">arrow_back</S.BackButton>
+        <HeaderButton className="material-icons">arrow_back</HeaderButton>
       </Link>
-      <Title text={book ? book.name : "Loading"} />
-      <S.Spacer />
-    </S.BookHeader>
+      <Title text={book.name} />
+      <HeaderButton
+        className="material-icons"
+        onClick={() => {
+          if (window.confirm("Are you sure you want to delete?")) {
+            book.delete();
+            history.push("/home");
+          }
+        }}
+      >
+        delete_outline
+      </HeaderButton>
+    </Header>
   );
-};
-
-S.BookText = styled.textarea`
-  width: 100%;
-  font-family: Bitter;
-  font-size: 20px;
-  background: none;
-  border: none;
-  margin-top: 48px;
-
-  :focus {
-    outline: none;
-  }
-`;
-
-S.BookColorLine = styled.div`
-  height: 6px;
-  width: 48px;
-  margin: auto;
-  border-radius: 3px;
-  background: ${(props) => getColorHex(props.color)};
-`;
-
-const BookColorLine = ({ book }) => {
-  return <S.BookColorLine color={book.color} />;
-};
-
-const BookText = ({ book, onChange }) => {
-  return (
-    <S.BookText onChange={(e) => onChange(e.target.value)} value={book.text} />
-  );
-};
+});

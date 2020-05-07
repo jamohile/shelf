@@ -4,25 +4,25 @@ import { isMobile } from "react-device-detect";
 
 const S = {};
 
-S.EditableTitle = styled.input`
-  flex-grow: 1;
-  width: 0;
-  text-align: center;
+S.BookText = styled.textarea`
+  width: 100%;
   font-family: Bitter;
-  font-size: ${isMobile ? 48 : 24}px;
-  border: none;
+  font-size: ${isMobile ? 40 : 20}px;
   background: none;
-  :focus{
+  border: none;
+  margin-top: ${isMobile ? 96 : 48}px;
+
+  :focus {
     outline: none;
   }
 `;
 
-export default ({ value, placeholder, onChange }) => {
+export default ({ book, onChange }) => {
   return (
-    <S.EditableTitle
-      placeholder={placeholder}
-      value={value}
+    <S.BookText
       onChange={(e) => onChange(e.target.value)}
+      value={book.text}
+      placeholder="Type away..."
     />
   );
 };
