@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 
 import * as firebase from "firebase";
+import "firebase/auth";
 
 import pages from "./pages";
 

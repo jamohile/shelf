@@ -6,6 +6,8 @@ import Header from "../components/Header";
 import Title from "../components/Title";
 
 import * as firebase from "firebase/app";
+import "firebase/firestore"
+
 import Book from "../components/Book";
 import BookModel from "../models/Book";
 import EditableTitle from "../components/EditableTitle";

@@ -1,5 +1,5 @@
 import * as firebase from "firebase/app";
-
+import "firebase/firestore";
 export default class Book {
   constructor(id, { name, color, text } = {}) {
     this.id = id;

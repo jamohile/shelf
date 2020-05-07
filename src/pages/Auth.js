@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Title from "../components/Title";
 
 import * as firebase from "firebase/app";
+import "firebase/auth"
 
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import styled from "styled-components";

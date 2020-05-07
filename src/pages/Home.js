@@ -7,6 +7,9 @@ import Shelf from "../components/Shelf";
 import LoadingHeader from "../components/LoadingHeader";
 
 import * as firebase from "firebase/app";
+import "firebase/firestore";
+import "firebase/auth";
+
 import BookModel from "../models/Book";
 import { Link } from "react-router-dom";
 import HeaderButton from "../components/HeaderButton";

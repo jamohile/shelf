@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import App from "./App";
 
 import * as firebase from "firebase/app";
+import "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyApKWqp_vjS5sdqrJ_5gOvjDwwUygePZic",
