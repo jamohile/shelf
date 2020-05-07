@@ -12,6 +12,9 @@ S.BookText = styled.textarea`
   border: none;
   margin-top: ${isMobile ? 96 : 48}px;
 
+  height: 0;
+  flex-grow: 1;
+
   :focus {
     outline: none;
   }

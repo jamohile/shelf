@@ -11,8 +11,16 @@ import BookText from "../components/BookText";
 import LoadingHeader from "../components/LoadingHeader";
 import HeaderSpacer from "../components/HeaderSpacer";
 import HeaderButton from "../components/HeaderButton";
+import EditableTitle from "../components/EditableTitle";
 
 const S = {};
+
+S.Book = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 
 export default ({ bookId }) => {
   const [book, setBook] = useState({ instance: new BookModel(bookId) });
@@ -25,24 +33,27 @@ export default ({ bookId }) => {
     return <LoadingHeader />;
   }
   return (
-    <>
-      <BookHeader book={book.instance} />
+    <S.Book>
+      <BookHeader
+        book={book.instance}
+        onNameChange={(name) => book.instance.update({ name })}
+      />
       <BookColorLine book={book.instance} />
       <BookText
         book={book.instance}
         onChange={(text) => book.instance.update({ text })}
       />
-    </>
+    </S.Book>
   );
 };
 
-const BookHeader = withRouter(({ book, history }) => {
+const BookHeader = withRouter(({ book, history, onNameChange }) => {
   return (
     <Header>
       <Link to="/home">
         <HeaderButton className="material-icons">arrow_back</HeaderButton>
       </Link>
-      <Title text={book.name} />
+      <EditableTitle value={book.name} onChange={onNameChange} />
       <HeaderButton
         className="material-icons"
         onClick={() => {

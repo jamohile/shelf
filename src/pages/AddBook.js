@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Redirect, Link } from "react-router-dom";
+import { Redirect, Link, withRouter } from "react-router-dom";
 import styled from "styled-components";
 
 import Header from "../components/Header";
 import Title from "../components/Title";
 
 import * as firebase from "firebase/app";
-import "firebase/firestore"
+import "firebase/firestore";
 
 import Book from "../components/Book";
 import BookModel from "../models/Book";
@@ -25,13 +25,8 @@ S.BookContainer = styled.div`
   margin-top: 48px;
 `;
 
-export default ({ bookId }) => {
+export default withRouter(({ history }) => {
   const [book, setBook] = useState({ color: "red", name: "" });
-  const [submitted, setSubmitted] = useState(false);
-
-  if (submitted) {
-    return <Redirect to="/home" />;
-  }
 
   return (
     <>
@@ -39,8 +34,11 @@ export default ({ bookId }) => {
         book={book}
         onChange={(name) => setBook({ ...book, name })}
         onSubmit={async () => {
-          await BookModel.getCollectionRef().add(book);
-          setSubmitted(true);
+          const { id } = await BookModel.getCollectionRef().add({
+            ...book,
+            name: book.name || "My Book",
+          });
+          history.push(`/books/${id}`);
         }}
       />
       <S.BookContainer>
@@ -53,45 +51,20 @@ export default ({ bookId }) => {
       />
     </>
   );
-};
-
-function getBooksRef() {
-  const uid = firebase.auth().currentUser.uid;
-  return firebase.firestore().collection("user").doc(uid).collection("books");
-}
-
-S.AddBookHeader = styled(Header)`
-  margin-bottom: 48px;
-`;
-
-S.Spacer = styled.span`
-  width: 24px;
-`;
-S.Button = styled.span`
-  transition: all 0.2s;
-  color: black !important;
-  :hover {
-    transform: scale(1.1);
-    cursor: pointer;
-  }
-`;
+});
 
 const AddBookHeader = ({ book, onChange, onSubmit }) => {
   return (
-    <S.AddBookHeader>
+    <Header>
       <Link to="/home">
         <HeaderButton className="material-icons">arrow_back</HeaderButton>
       </Link>
       <EditableTitle
-        placeholder={"Title"}
+        placeholder='"My Book"'
         value={book.name}
         onChange={onChange}
       />
-      {book.name && book.color ? (
-        <DoneCheckmark onClick={onSubmit} />
-      ) : (
-        <HeaderSpacer />
-      )}
-    </S.AddBookHeader>
+      {book.color ? <DoneCheckmark onClick={onSubmit} /> : <HeaderSpacer />}
+    </Header>
   );
 };
